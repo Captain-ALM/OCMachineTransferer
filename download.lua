@@ -74,6 +74,7 @@ local function readc(con)
 		if tmp ~= nil then
 		  if tmp ~= "" then
 		    data = data..tmp
+			con:setTimeout(0)
 		  end
 		end
 	  end,
@@ -87,6 +88,7 @@ local function readc(con)
   if data == "" then
     data = nil
   end
+  con:setTimeout(5)
   return data
 end
 
