@@ -746,9 +746,8 @@ Public Partial Class MainForm
 		While exec
 			If c_vd() > 0 Then
 				Me.Invoke(dq_vd())
-			Else
-				Thread.Sleep(100)
 			End If
+			Thread.Sleep(100)
 		End While
 	End Sub
 	
