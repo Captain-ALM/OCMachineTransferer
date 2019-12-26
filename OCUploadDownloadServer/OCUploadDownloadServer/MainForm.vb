@@ -24,7 +24,7 @@ Public Partial Class MainForm
 	Public r_q As New Queue(Of Byte())
 	Public s_q As New Queue(Of Byte())
 	Public u_q As New Queue(Of [Delegate])
-	Protected vupslockobj As New Object()
+	'Protected vupslockobj As New Object()
 	Public exec As Boolean = False
 	Public m As Mode = Mode.None
 	Public stage As Integer = 0
@@ -219,7 +219,8 @@ Public Partial Class MainForm
 				eq_vd(Sub() lblstat.Text = "Opening...")
 				eq_vd(Sub() pbstat.Style = ProgressBarStyle.Marquee)
 				If File.Exists(filepath) Then
-					eq_vd(Sub() txtbxname.Text = Path.GetFileName(filepath))
+					Dim filenom As String = Path.GetFileName(filepath)
+					eq_vd(Sub() txtbxname.Text = filenom)
 					eq_vd(Sub() txtbxname.DeselectAll())
 					unsetSafe()
 					setCancel()
@@ -752,24 +753,24 @@ Public Partial Class MainForm
 	End Sub
 	
 	Sub eq_vd(del As [Delegate])
-		SyncLock vupslockobj
+		'SyncLock vupslockobj
 			u_q.Enqueue(del)
-		End SyncLock
+		'End SyncLock
 	End Sub
 	
 	Function dq_vd() As [Delegate]
 		Dim toret As [Delegate] = Nothing
-		SyncLock vupslockobj
+		'SyncLock vupslockobj
 			toret = u_q.Dequeue()
-		End SyncLock
+		'End SyncLock
 		Return toret
 	End Function
 	
 	Function c_vd() As Integer
 		Dim toret As Integer = 0
-		SyncLock vupslockobj
+		'SyncLock vupslockobj
 			toret = u_q.Count
-		End SyncLock
+		'End SyncLock
 		Return toret
 	End Function
 End Class
