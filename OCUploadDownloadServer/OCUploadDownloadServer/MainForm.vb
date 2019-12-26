@@ -216,54 +216,54 @@ Public Partial Class MainForm
 		While exec And runf
 			If m = Mode.Open Then
 				contrvis(False)
-				Me.Invoke(Sub() lblstat.Text = "Opening...")
-				Me.Invoke(Sub() pbstat.Style = ProgressBarStyle.Marquee)
+				eq_vd(Sub() lblstat.Text = "Opening...")
+				eq_vd(Sub() pbstat.Style = ProgressBarStyle.Marquee)
 				If File.Exists(filepath) Then
-					Me.Invoke(Sub() txtbxname.Text = Path.GetFileName(filepath))
-					Me.Invoke(Sub() txtbxname.DeselectAll())
+					eq_vd(Sub() txtbxname.Text = Path.GetFileName(filepath))
+					eq_vd(Sub() txtbxname.DeselectAll())
 					unsetSafe()
 					setCancel()
 					Dim data As String = File.ReadAllText(filepath)
 					unsetCancel()
 					setSafe()
-					Me.Invoke(Sub() txtbx.Text = data)
-					Me.Invoke(Sub() txtbx.DeselectAll())
+					eq_vd(Sub() txtbx.Text = data)
+					eq_vd(Sub() txtbx.DeselectAll())
 				End If
 				filepath = ""
-				Me.Invoke(Sub() pbstat.Style = ProgressBarStyle.Continuous)
-				Me.Invoke(Sub() lblstat.Text = "")
+				eq_vd(Sub() pbstat.Style = ProgressBarStyle.Continuous)
+				eq_vd(Sub() lblstat.Text = "")
 				contrvis(True)
 				m = Mode.None
 			ElseIf m = Mode.Save Then
 				contrvis(False)
-				Me.Invoke(Sub() lblstat.Text = "Saving...")
-				Me.Invoke(Sub() pbstat.Style = ProgressBarStyle.Marquee)
+				eq_vd(Sub() lblstat.Text = "Saving...")
+				eq_vd(Sub() pbstat.Style = ProgressBarStyle.Marquee)
 				unsetSafe()
 				setCancel()
 				File.WriteAllText(filepath, txtbx.Text)
 				unsetCancel()
 				setSafe()
 				filepath = ""
-				Me.Invoke(Sub() pbstat.Style = ProgressBarStyle.Continuous)
-				Me.Invoke(Sub() lblstat.Text = "")
+				eq_vd(Sub() pbstat.Style = ProgressBarStyle.Continuous)
+				eq_vd(Sub() lblstat.Text = "")
 				contrvis(True)
 				m = Mode.None
 			ElseIf m = Mode.Clear Then
 				contrvis(False)
-				Me.Invoke(Sub() lblstat.Text = "Clearing...")
-				Me.Invoke(Sub() pbstat.Style = ProgressBarStyle.Marquee)
-				Me.Invoke(Sub() txtbxname.Text = "")
-				Me.Invoke(Sub() txtbxname.DeselectAll())
-				Me.Invoke(Sub() txtbx.Text = "")
-				Me.Invoke(Sub() txtbx.DeselectAll())
-				Me.Invoke(Sub() pbstat.Style = ProgressBarStyle.Continuous)
-				Me.Invoke(Sub() lblstat.Text = "")
+				eq_vd(Sub() lblstat.Text = "Clearing...")
+				eq_vd(Sub() pbstat.Style = ProgressBarStyle.Marquee)
+				eq_vd(Sub() txtbxname.Text = "")
+				eq_vd(Sub() txtbxname.DeselectAll())
+				eq_vd(Sub() txtbx.Text = "")
+				eq_vd(Sub() txtbx.DeselectAll())
+				eq_vd(Sub() pbstat.Style = ProgressBarStyle.Continuous)
+				eq_vd(Sub() lblstat.Text = "")
 				contrvis(True)
 				m = Mode.None
 			ElseIf m = Mode.Upload Then
 				contrvis(False)
-				Me.Invoke(Sub() lblstat.Text = "Receiving...")
-				Me.Invoke(Sub() lblstat.Text = "Receiving : Sending Handshake...")
+				eq_vd(Sub() lblstat.Text = "Receiving...")
+				eq_vd(Sub() lblstat.Text = "Receiving : Sending Handshake...")
 				setCancel()
 				stage = 1
 				If canc Then
@@ -273,8 +273,8 @@ Public Partial Class MainForm
 				Else 
 					sendHandshake("1".ToCharArray()(0))
 				End If
-				Me.Invoke(Sub() pbstat.Value = CType(1*(100/3), integer))
-				Me.Invoke(Sub() lblstat.Text = "Receiving : Waiting For Data...")
+				eq_vd(Sub() pbstat.Value = CType(1*(100/3), integer))
+				eq_vd(Sub() lblstat.Text = "Receiving : Waiting For Data...")
 				stage = 2
 				While r_q.Count = 0 And SocketConnected(client_sock) And Not canc
 					Thread.Sleep(100)
@@ -300,8 +300,8 @@ Public Partial Class MainForm
 					GoTo fu
 				End If
 				unsetCancel()
-				Me.Invoke(Sub() pbstat.Value = CType(2*(100/3), integer))
-				Me.Invoke(Sub() lblstat.Text = "Receiving : Processing Data...")
+				eq_vd(Sub() pbstat.Value = CType(2*(100/3), integer))
+				eq_vd(Sub() lblstat.Text = "Receiving : Processing Data...")
 				stage = 3
 				Dim bts As Byte() = r_q.Dequeue()
 				Dim str As String = System.Text.Encoding.ASCII.GetString(bts)
@@ -311,12 +311,12 @@ Public Partial Class MainForm
 				If str.Contains(ControlChars.Lf) And Not str.Contains(ControlChars.Cr) Then
 					str = str.Replace(ControlChars.Lf, ControlChars.CrLf)
 				End If
-				Me.Invoke(Sub() txtbxname.Text = "")
-				Me.Invoke(Sub() txtbxname.DeselectAll())
-				Me.Invoke(Sub() txtbx.Text = str)
-				Me.Invoke(Sub() txtbx.DeselectAll())
-				Me.Invoke(Sub() pbstat.Value = CType(3*(100/3), integer))
-				Me.Invoke(Sub() lblstat.Text = "Receiving : Sending Handshake...")
+				eq_vd(Sub() txtbxname.Text = "")
+				eq_vd(Sub() txtbxname.DeselectAll())
+				eq_vd(Sub() txtbx.Text = str)
+				eq_vd(Sub() txtbx.DeselectAll())
+				eq_vd(Sub() pbstat.Value = CType(3*(100/3), integer))
+				eq_vd(Sub() lblstat.Text = "Receiving : Sending Handshake...")
 				setCancel()
 				stage = 4
 				If canc Then
@@ -328,14 +328,14 @@ Public Partial Class MainForm
 				fu:
 				unsetCancel()
 				stage = 0
-				Me.Invoke(Sub() pbstat.Value = 0)
-				Me.Invoke(Sub() lblstat.Text = "")
+				eq_vd(Sub() pbstat.Value = 0)
+				eq_vd(Sub() lblstat.Text = "")
 				contrvis(True)
 				m = Mode.None
 			ElseIf m = Mode.Download Then
 				contrvis(False)
-				Me.Invoke(Sub() lblstat.Text = "Sending...")
-				Me.Invoke(Sub() lblstat.Text = "Sending : Sending Handshake...")
+				eq_vd(Sub() lblstat.Text = "Sending...")
+				eq_vd(Sub() lblstat.Text = "Sending : Sending Handshake...")
 				setCancel()
 				stage = 1
 				If canc Then
@@ -345,8 +345,8 @@ Public Partial Class MainForm
 				Else 
 					sendHandshake("1".ToCharArray()(0))
 				End If
-				Me.Invoke(Sub() pbstat.Value = ctype(1*(100/3), integer))
-				Me.Invoke(Sub() lblstat.Text = "Sending : Waiting For Handshake...")
+				eq_vd(Sub() pbstat.Value = ctype(1*(100/3), integer))
+				eq_vd(Sub() lblstat.Text = "Sending : Waiting For Handshake...")
 				stage = 2
 				While r_q.Count = 0 And SocketConnected(client_sock) And Not canc
 					Thread.Sleep(100)
@@ -389,8 +389,8 @@ Public Partial Class MainForm
 					r_q.Clear()
 					GoTo fd
 				End If
-				Me.Invoke(Sub() pbstat.Value = ctype(2*(100/3), integer))
-				Me.Invoke(Sub() lblstat.Text = "Sending : Sending Data...")
+				eq_vd(Sub() pbstat.Value = ctype(2*(100/3), integer))
+				eq_vd(Sub() lblstat.Text = "Sending : Sending Data...")
 				stage = 3
 				If Not canc Then
 					Dim bts As Byte() = System.Text.Encoding.ASCII.GetBytes(txtbx.Text)
@@ -411,8 +411,8 @@ Public Partial Class MainForm
 					r_q.Clear()
 					GoTo fd
 				End If
-				Me.Invoke(Sub() pbstat.Value = ctype(3*(100/3), integer))
-				Me.Invoke(Sub() lblstat.Text = "Sending : Waiting For Handshake...")
+				eq_vd(Sub() pbstat.Value = ctype(3*(100/3), integer))
+				eq_vd(Sub() lblstat.Text = "Sending : Waiting For Handshake...")
 				stage = 4
 				While r_q.Count = 0 And SocketConnected(client_sock) And canc
 					Thread.Sleep(100)
@@ -443,8 +443,8 @@ Public Partial Class MainForm
 				fd:
 				unsetCancel()
 				stage = 0
-				Me.Invoke(Sub() pbstat.Value = 0)
-				Me.Invoke(Sub() lblstat.Text = "")
+				eq_vd(Sub() pbstat.Value = 0)
+				eq_vd(Sub() lblstat.Text = "")
 				contrvis(True)
 				m = Mode.None
 			Else
@@ -702,7 +702,7 @@ Public Partial Class MainForm
 	
 	Private Sub contrvis(ByVal vis As Boolean, Optional ByVal vm As Vism = Vism.server_stats or Vism.program_management or Vism.textbox or Vism.state)
 		If Me.InvokeRequired Then
-			Me.Invoke(Sub() contrvis(vis,vm))
+			eq_vd(Sub() contrvis(vis,vm))
 		Else
 			If vm.HasFlag(Vism.server_stats) Then
 				dudsa.Enabled = vis
