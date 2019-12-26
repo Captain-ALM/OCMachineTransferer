@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.4
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "OCUploadDownloadServer", "OCUploadDownloadServer\OCUploadDownloadServer.vbproj", "{2FE6A11F-332C-4E6D-B161-E4F775FE53C0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2FE6A11F-332C-4E6D-B161-E4F775FE53C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FE6A11F-332C-4E6D-B161-E4F775FE53C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FE6A11F-332C-4E6D-B161-E4F775FE53C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FE6A11F-332C-4E6D-B161-E4F775FE53C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal
