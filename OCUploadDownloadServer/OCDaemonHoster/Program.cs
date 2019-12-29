@@ -108,6 +108,7 @@ namespace OCDaemonHoster
 				try {
 					Thread.Sleep(100);
 				} catch (ThreadInterruptedException e) {
+					break;
 				}
 			}
 			server.close();
@@ -196,7 +197,7 @@ namespace OCDaemonHoster
 				if (isSwitch && !hasEquals) {
 					cSwitch = carg.Substring(1).ToLower();
 				} else if (isSwitch && hasEquals) {
-					cSwitch = carg.Substring(1, carg.IndexOf("=")).ToLower();
+					cSwitch = carg.Substring(1, carg.IndexOf("=") - 1).ToLower();
 					cValue = carg.Substring(carg.IndexOf("=") + 1);
 				}
 				if (!settings.ContainsKey(cSwitch)) {

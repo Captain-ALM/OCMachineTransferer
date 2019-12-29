@@ -111,6 +111,7 @@ namespace captainalm.network.oc
 				try {
 					Thread.Sleep(100);
 				} catch (ThreadInterruptedException e) {
+					break;
 				}
 			}
 			sSock = null;
@@ -122,6 +123,7 @@ namespace captainalm.network.oc
 					try {
 						Thread.Sleep(100);
 					} catch (ThreadInterruptedException e) {
+						break;
 					}
 				}
 				try {
@@ -136,6 +138,7 @@ namespace captainalm.network.oc
 						try {
 							Thread.Sleep(100);
 						} catch (ThreadInterruptedException e) {
+							break;
 						}
 					}
 				} catch (SocketException e) {

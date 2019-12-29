@@ -118,6 +118,7 @@ namespace captainalm.network.oc
 						try {
 							Thread.Sleep(100);
 						} catch (ThreadInterruptedException e) {
+							break;
 						}
 						lout++;
 					}

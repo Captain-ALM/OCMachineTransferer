@@ -4,6 +4,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # SharpDevelop 4.4
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "OCUploadDownloadServer", "OCUploadDownloadServer\OCUploadDownloadServer.vbproj", "{2FE6A11F-332C-4E6D-B161-E4F775FE53C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCDaemonHoster", "OCDaemonHoster\OCDaemonHoster.csproj", "{08F6D48F-9EAB-4861-9D50-F9F1BC10C074}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,5 +16,9 @@ Global
 		{2FE6A11F-332C-4E6D-B161-E4F775FE53C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2FE6A11F-332C-4E6D-B161-E4F775FE53C0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2FE6A11F-332C-4E6D-B161-E4F775FE53C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08F6D48F-9EAB-4861-9D50-F9F1BC10C074}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08F6D48F-9EAB-4861-9D50-F9F1BC10C074}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08F6D48F-9EAB-4861-9D50-F9F1BC10C074}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08F6D48F-9EAB-4861-9D50-F9F1BC10C074}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal
