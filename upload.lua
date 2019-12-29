@@ -60,33 +60,6 @@ function try(block)
    return result
 end
 
-local function readc(con)
-  local herr = false
-  local data = ""
-  while not herr do
-    try {
-	  function()
-	    local tmp = ""
-		tmp = con:read(1)
-		if tmp ~= nil then
-		  if tmp ~= "" then
-		    data = data..tmp
-		  end
-		end
-	  end,
-	  catch {
-	    function(ex)
-		  herr = true
-		end
-	  }
-	}
-  end
-  if data == "" then
-    data = nil
-  end
-  return data
-end
-
 local function shandshake(con)
   print("Sending Handshake...\n")
   con:write("2")

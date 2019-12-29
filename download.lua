@@ -66,7 +66,8 @@ end
 local function readc(con)
   local herr = false
   local data = ""
-  while not herr do
+  local lout = 0
+  while ((not herr) and (lout < 50)) do
     try {
 	  function()
 	    local tmp = ""
@@ -75,7 +76,11 @@ local function readc(con)
 		  if tmp ~= "" then
 		    data = data..tmp
 			con:setTimeout(0)
+	      else
+		    lout = lout + 1
 		  end
+		else
+		  lout = lout + 1
 		end
 	  end,
 	  catch {
@@ -85,6 +90,7 @@ local function readc(con)
 	  }
 	}
   end
+  lout = 0
   if data == "" then
     data = nil
   end
