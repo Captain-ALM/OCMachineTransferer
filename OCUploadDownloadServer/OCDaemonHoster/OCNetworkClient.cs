@@ -13,7 +13,7 @@ using System.Threading;
 
 namespace captainalm.network.oc
 {
-	public class OCNetworkClient {
+	public sealed class OCNetworkClient {
 		private Socket sock;
 		private IPEndPoint remoteAddress;
 		private IPEndPoint localAddress;

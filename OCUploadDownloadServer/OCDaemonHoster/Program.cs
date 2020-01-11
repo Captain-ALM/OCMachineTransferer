@@ -69,7 +69,12 @@ namespace OCDaemonHoster
 				} catch (IOException e) {
 				}
 			}
-			OCNetworkListener server = new OCNetworkListener(address);
+			List<String> wl = new List<String>();
+			if (settings.ContainsKey("whitelist")) {
+				
+				wl.AddRange(settings["whitelist"].Split(",".ToCharArray()));
+			}
+			OCNetworkListener server = new OCNetworkListener(address, wl);
 			writeLine("[INFO] : Listener Started!");
 			writeLine("[INFO] : Listener 'Address:Port' : " + server.getListeningAddress().Address.ToString()
 			          + ":" + server.getListeningAddress().Port);
@@ -286,9 +291,10 @@ namespace OCDaemonHoster
 			writeLine("");
 			writeLine("Usage:");
 			writeLine(
-				"OCDH.exe <listening IP Address> <listening Port> [-mode=<MODE>] [-target=<target file path>] [-cache] [-enumeration] [-creation] [-deletion]");
+				"OCDH.exe <listening IP Address> <listening Port> [-mode=<MODE>] [-whitelist=<IP Address [Seperated By ,]>] [-target=<target file path>] [-cache] [-enumeration] [-creation] [-deletion]");
 			writeLine("");
 			writeLine("-mode=<MODE> : allows to select a Hosting Mode.");
+			writeLine("-whitelist=<IP Address [Seperated By ,]> : allows IP Address to connect, if there is no whitelist switch then any IP Address can connect.");
 			writeLine("-target=<target file path> : allows to select a file for hosting (File Host Mode Only).");
 			writeLine("-cache : caches the target file once (File Host Mode Only).");
 			writeLine("-enumeration : allows for file/directory enumeration (File Access Mode Only).");

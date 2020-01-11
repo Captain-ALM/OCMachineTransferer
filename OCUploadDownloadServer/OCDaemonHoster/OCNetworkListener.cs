@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -14,7 +15,7 @@ using System.Threading;
 
 namespace captainalm.network.oc
 {
-	public class OCNetworkListener {
+	public sealed class OCNetworkListener {
 		private Socket sSock;
 		private Thread lThread;
 		private Boolean listening;
@@ -23,6 +24,7 @@ namespace captainalm.network.oc
 		private Boolean cExists;
 		private Object slockcl = new Object();
 		private IPEndPoint listeningAddress;
+		private List<String> whitelist;
 
 		public OCNetworkListener(IPEndPoint addressIn) {
 			lThread = new Thread(new ThreadStart(this.run));
@@ -55,6 +57,11 @@ namespace captainalm.network.oc
 			if (listening) {
 				lThread.Start();
 			}
+			whitelist = new List<String>();
+		}
+		
+		public OCNetworkListener(IPEndPoint addressIn, List<String> whitelistIn) : this(addressIn) {
+			whitelist.AddRange(whitelistIn);
 		}
 
 		public OCNetworkClient getAcceptedClient() {
@@ -78,6 +85,10 @@ namespace captainalm.network.oc
 					cExists = false;
 				}
 			}
+		}
+		
+		public List<String> getWhiteList() {
+			return whitelist;
 		}
 
 		public IPEndPoint getListeningAddress() {
@@ -117,7 +128,7 @@ namespace captainalm.network.oc
 			sSock = null;
 		}
 		
-		protected void run() {
+		private void run() {
 			while (listening) {
 				while (cExists) {
 					try {
@@ -128,21 +139,49 @@ namespace captainalm.network.oc
 				}
 				try {
 					Socket sa = sSock.Accept();
-					sa.ReceiveBufferSize = Int16.MaxValue;
-					sa.SendBufferSize = Int16.MaxValue;
-					sa.ReceiveTimeout = 5000;
-					sa.SendTimeout = 5000;
-					acceptedClient = new OCNetworkClient(sa);
-					cWaiting = true;
-					while (cWaiting) {
-						try {
-							Thread.Sleep(100);
-						} catch (ThreadInterruptedException e) {
-							break;
+					if (shouldAccept(sa)) {
+						sa.ReceiveBufferSize = Int16.MaxValue;
+						sa.SendBufferSize = Int16.MaxValue;
+						sa.ReceiveTimeout = 5000;
+						sa.SendTimeout = 5000;
+						acceptedClient = new OCNetworkClient(sa);
+						cWaiting = true;
+						while (cWaiting) {
+							try {
+								Thread.Sleep(100);
+							} catch (ThreadInterruptedException e) {
+								break;
+							}
 						}
+					} else {
+						try {
+							sa.Shutdown(SocketShutdown.Both);
+						} catch (SocketException e) {
+						}
+						try {
+							sa.Close();
+						} catch (SocketException e) {
+						}
+						sa = null;
 					}
 				} catch (SocketException e) {
 				}
+			}
+		}
+		
+		private bool shouldAccept(Socket si) {
+			if (whitelist.Count > 0) {
+				String addr = ((IPEndPoint) si.RemoteEndPoint).Address.ToString();
+				bool toret = false;
+				for (int i = 0; i < whitelist.Count; i++) {
+					if (whitelist[i].Equals(addr)) {
+						toret = true;
+						break;
+					}
+				}
+				return toret;
+			} else {
+				return true;
 			}
 		}
 	}
