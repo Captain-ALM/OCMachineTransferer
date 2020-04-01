@@ -4,17 +4,22 @@ local shell = require("shell")
 local fs = require("filesystem")
 local os = require("os")
 
+io.write("upload Utility (C) Captain ALM 2020 :: BSD 2-Clause\n")
+
 if not c.isAvailable("internet") then
-  return
+  io.stderr:write("Internet Card Required!\n")
+  return 2
 end
 
 local i = c.internet
 
 if(i == nil or ic == nil) then
-  return
+  io.stderr:write("Internet Component/API Required!\n")
+  return 2
 end
 if(not i.isTcpEnabled()) then
-  return
+  io.stderr:write("TCP Support Required!\n")
+  return 2
 end
 local args, options = shell.parse(...)
 local filename = ""
@@ -32,7 +37,7 @@ elseif #args == 2 then
   port = 100
 elseif #args == 3 then
   ipaddress = args[2]
-  port = args[3] + 0
+  port = math.floor(math.abs(args[3]))
 end
 
 filename = shell.resolve(args[1])
