@@ -29,7 +29,7 @@ namespace OCDaemonHoster
 		public static List<String> addrsv6;
 
 		public static void Main(String[] args) {
-			writeLine("Open Computers Daemon Hoster (OCDH) : (C) Captain ALM 2019.");
+			writeLine("Open Computers Daemon Hoster (OCDH) : (C) Captain ALM 2020.");
 			writeLine("License: BSD 2-Clause.");
 			addrsv4 = getInterfaceAddresses(4);
 			addrsv6 = getInterfaceAddresses(6);
@@ -56,8 +56,6 @@ namespace OCDaemonHoster
 
 		public static void hoster() {
 			writeLine("Hosting Mode!");
-			IPEndPoint address = new IPEndPoint(IPAddress.Parse(ipAddress),port);
-			writeLine("[INFO] : Address Setup!");
 			if (settings.ContainsKey("target")) {
 				writeLine("[INFO] : Target File : " + settings["target"]);
 			}
@@ -69,6 +67,17 @@ namespace OCDaemonHoster
 				} catch (IOException e) {
 				}
 			}
+			serverRuntime();
+		}
+
+		public static void accessor() {
+			writeLine("Accessor Mode!");
+			serverRuntime();
+		}
+		
+		public static void serverRuntime() {
+			IPEndPoint address = new IPEndPoint(IPAddress.Parse(ipAddress),port);
+			writeLine("[INFO] : Address Setup!");
 			List<String> wl = new List<String>();
 			if (settings.ContainsKey("whitelist")) {
 				
@@ -118,10 +127,6 @@ namespace OCDaemonHoster
 			}
 			server.close();
 			server = null;
-		}
-
-		public static void accessor() {
-			throw new NotImplementedException("Method not Implemented.");
 		}
 
 		public static void handleProtocol(OCNetworkClient clientIn) {
@@ -176,6 +181,172 @@ namespace OCDaemonHoster
 				}
 				writeLine("[INFO] : Receiving : Sending Handshake...");
 				clientIn.sendHandshake("1");
+			} else if (prot.Equals("3")) {
+				write("[INFO] : Access Mode : ");
+				clientIn.sendHandshake("1");
+				String protam = clientIn.receiveProtocol();
+				if (protam.Equals("1") && ! settings.ContainsKey("writeonly")) {
+					writeLine("Send");
+					writeLine("[INFO] : Sending : Sending Handshake...");
+					clientIn.sendHandshake("1");
+					writeLine("[INFO] : Sending : Receiving Path...");
+					Int32 sl = clientIn.receiveSmallNumber();
+					if (sl != 0) {
+						Int32 l = clientIn.receiveNumber(sl);
+						if (l != 0) {
+							String nom = clientIn.receiveData(l);
+							writeLine("[INFO] : Reading : " + nom);
+							try {
+								String data = loadFile(nom);
+								writeLine("[INFO] : Sending : Waiting For Handshake...");
+								if (clientIn.receiveHandshake("1")) {
+									writeLine("[INFO] : Sending : " + nom);
+									clientIn.sendSmallNumber(data.Length.ToString().Length);
+									clientIn.sendNumber(data.Length);
+									clientIn.sendData(data);
+								}
+								writeLine("[INFO] : Sending : Waiting For Handshake...");
+								clientIn.receiveHandshake("1");
+							} catch (IOException e) {
+							}
+						}
+					}
+				} else if (protam.Equals("2") && ! settings.ContainsKey("readonly")) {
+					writeLine("Receive");
+					writeLine("[INFO] : Receiving : Sending Handshake...");
+					clientIn.sendHandshake("1");
+					writeLine("[INFO] : Receiving : Receiving Path...");
+					Int32 sl = clientIn.receiveSmallNumber();
+					if (sl != 0) {
+						Int32 l = clientIn.receiveNumber(sl);
+						if (l != 0) {
+							String nom = clientIn.receiveData(l);
+							writeLine("[INFO] : Receiving : Sending Handshake...");
+							clientIn.sendHandshake("1");
+							writeLine("[INFO] : Receiving : " + nom);
+							sl = clientIn.receiveSmallNumber();
+							if (sl != 0) {
+								l = clientIn.receiveNumber(sl);
+								if (l != 0) {
+									String data = clientIn.receiveData(l);
+									writeLine("[INFO] : Writing : " + nom);
+									try {
+										saveFile(nom,data);
+										writeLine("[INFO] : Receiving : Sending Handshake...");
+										clientIn.sendHandshake("1");
+									} catch (IOException e) {
+									}
+								}
+							}
+						}
+					}
+				} else if (protam.Equals("3") && settings.ContainsKey("creation")) {
+					writeLine("File Creation");
+					writeLine("[INFO] : Creating : Sending Handshake...");
+					clientIn.sendHandshake("1");
+					writeLine("[INFO] : Creating : Receiving Path...");
+					Int32 sl = clientIn.receiveSmallNumber();
+					if (sl != 0) {
+						Int32 l = clientIn.receiveNumber(sl);
+						if (l != 0) {
+							String nom = clientIn.receiveData(l);
+							writeLine("[INFO] : Creating : " + nom);
+							try {
+								createFile(nom);
+								writeLine("[INFO] : Creating : Sending Handshake...");
+								clientIn.sendHandshake("1");
+							} catch (IOException e) {
+							}
+						}
+					}
+				} else if (protam.Equals("4") && settings.ContainsKey("deletion")) {
+					writeLine("Deletion");
+					writeLine("[INFO] : Deleting : Sending Handshake...");
+					clientIn.sendHandshake("1");
+					writeLine("[INFO] : Deleting : Receiving Path...");
+					Int32 sl = clientIn.receiveSmallNumber();
+					if (sl != 0) {
+						Int32 l = clientIn.receiveNumber(sl);
+						if (l != 0) {
+							String nom = clientIn.receiveData(l);
+							writeLine("[INFO] : Deleting : " + nom);
+							try {
+								deleteFile(nom);
+								writeLine("[INFO] : Deleting : Sending Handshake...");
+								clientIn.sendHandshake("1");
+							} catch (IOException e) {
+							}
+						}
+					}
+				} else if (protam.Equals("5") && settings.ContainsKey("enumeration")) {
+					writeLine("Enumeration");
+					writeLine("[INFO] : Enumerating : Sending Handshake...");
+					clientIn.sendHandshake("1");
+					writeLine("[INFO] : Enumerating : Receiving Path...");
+					Int32 sl = clientIn.receiveSmallNumber();
+					if (sl != 0) {
+						Int32 l = clientIn.receiveNumber(sl);
+						if (l != 0) {
+							String nom = clientIn.receiveData(l);
+							writeLine("[INFO] : Enumerating : " + nom);
+							try {
+								String result = "";
+								if (Directory.Exists(nom) || File.Exists(nom)) {
+									if (File.GetAttributes(nom).HasFlag(FileAttributes.Directory)) {
+										List<String> enr = new List<string>(Directory.GetFileSystemEntries(nom));
+										enr.Remove(nom);
+										if (enr.Count > 0) {
+											if (enr.Count == 1) {
+												result = enr[0].ToString();
+											} else {
+												for (int i=0;i<(enr.Count - 1);i++) {
+													result = result + enr[i].ToString() + "\r\n";
+												}
+												result = result + enr[enr.Count - 1].ToString();
+											}
+										}
+										enr.Clear();
+										enr = null;
+									} else {
+										result = new FileInfo(nom).Length.ToString();
+									}
+								}
+								writeLine("[INFO] : Enumerating : Waiting For Handshake...");
+								if (clientIn.receiveHandshake("1")) {
+									writeLine("[INFO] : Enumerating : Sending Enumeration...");
+									clientIn.sendSmallNumber(result.Length.ToString().Length);
+									clientIn.sendNumber(result.Length);
+									clientIn.sendData(result);
+								}
+								writeLine("[INFO] : Enumerating : Waiting For Handshake...");
+								clientIn.receiveHandshake("1");
+							} catch (IOException e) {
+							}
+						}
+					}
+				}else if (protam.Equals("6") && settings.ContainsKey("deletion")) {
+					writeLine("Directory Creation");
+					writeLine("[INFO] : Creating : Sending Handshake...");
+					clientIn.sendHandshake("1");
+					writeLine("[INFO] : Creating : Receiving Path...");
+					Int32 sl = clientIn.receiveSmallNumber();
+					if (sl != 0) {
+						Int32 l = clientIn.receiveNumber(sl);
+						if (l != 0) {
+							String nom = clientIn.receiveData(l);
+							writeLine("[INFO] : Creating : " + nom);
+							try {
+								if (! Directory.Exists(nom)) {Directory.CreateDirectory(nom);}
+								writeLine("[INFO] : Creating : Sending Handshake...");
+								clientIn.sendHandshake("1");
+							} catch (IOException e) {
+							}
+						}
+					}
+				} else {
+					writeLine("Unknown");
+					clientIn.sendHandshake("0");
+				}
 			}
 		}
 
@@ -184,7 +355,29 @@ namespace OCDaemonHoster
 		}
 
 		public static void saveFile(String target, String contents) {
+			try {
+				var tp = System.IO.Path.GetDirectoryName(target);
+				if (! Directory.Exists(tp)) {Directory.CreateDirectory(tp);}
+			} catch (ArgumentException e) {
+			}
 			System.IO.File.WriteAllText(target,contents,System.Text.Encoding.ASCII);
+		}
+		
+		public static void createFile(String target) {
+			try {
+				var tp = System.IO.Path.GetDirectoryName(target);
+				if (! Directory.Exists(tp)) {Directory.CreateDirectory(tp);}
+			} catch (ArgumentException e) {
+			}
+			using (File.Create(target));
+		}
+		
+		public static void deleteFile(String target) {
+			if (File.GetAttributes(target).HasFlag(FileAttributes.Directory)) {
+				System.IO.Directory.Delete(target);
+			} else {
+				System.IO.File.Delete(target);
+			}
 		}
 
 		public static void decryptArgs(String[] args) {
@@ -291,7 +484,7 @@ namespace OCDaemonHoster
 			writeLine("");
 			writeLine("Usage:");
 			writeLine(
-				"OCDH.exe <listening IP Address> <listening Port> [-mode=<MODE>] [-whitelist=<IP Address [Seperated By ,]>] [-target=<target file path>] [-cache] [-enumeration] [-creation] [-deletion]");
+				"OCDH.exe <listening IP Address> <listening Port> [-mode=<MODE>] [-whitelist=<IP Address [Seperated By ,]>] [-target=<target file path>] [-cache] [-enumeration] [-creation] [-deletion] [-writeonly] [-readonly]");
 			writeLine("");
 			writeLine("-mode=<MODE> : allows to select a Hosting Mode.");
 			writeLine("-whitelist=<IP Address [Seperated By ,]> : allows IP Address to connect, if there is no whitelist switch then any IP Address can connect.");
@@ -300,6 +493,8 @@ namespace OCDaemonHoster
 			writeLine("-enumeration : allows for file/directory enumeration (File Access Mode Only).");
 			writeLine("-creation : allows for file/directory creation (File Access Mode Only).");
 			writeLine("-deletion : allows for file/directory deletion (File Access Mode Only).");
+			writeLine("-readonly : disallows write access for files (File Access Mode Only).");
+			writeLine("-writeonly : disallows read access for files (File Access Mode Only).");
 			writeLine("");
 			writeLine("MODE:");
 			writeLine("H : File Host Mode, Hosts a single file for access.");

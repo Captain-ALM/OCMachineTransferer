@@ -138,6 +138,110 @@ namespace captainalm.network.oc
 			}
 			return toret;
 		}
+		
+		public Boolean sendSmallNumber(Int32 numIn) {
+			if (numIn > -1 && numIn < 10 && connected) {
+				String numStr = numIn.ToString();
+				try {
+					var bts = System.Text.Encoding.ASCII.GetBytes(numStr.Substring(0, 1));
+					sock.Send(bts,bts.Length,SocketFlags.None);
+					return true;
+				} catch (SocketException e) {
+					connected = false;
+				}
+			}
+			return false;
+		}
+		
+		public Boolean sendNumber(Int32 numIn) {
+			if (connected) {
+				String numStr = numIn.ToString();
+				try {
+					var bts = System.Text.Encoding.ASCII.GetBytes(numStr);
+					sock.Send(bts,bts.Length,SocketFlags.None);
+					return true;
+				} catch (SocketException e) {
+					connected = false;
+				}
+			}
+			return false;
+		}
+		
+		public Int32 receiveSmallNumber() {
+			if (connected) {
+				try {
+					var bts = new Byte[1];
+					sock.Receive(bts,1,SocketFlags.None);
+					String sn = System.Text.Encoding.ASCII.GetString(bts);
+					return Int32.Parse(sn);
+				} catch (SocketException e) {
+					connected = false;
+				} catch (FormatException e) {
+				} catch (OverflowException e) {
+				}
+			}
+			return 0;
+		}
+		
+		public Int32 receiveNumber(Int32 lIn) {
+			Int32 toret = 0;
+			if (connected) {
+				try {
+					int len = lIn;
+					byte[] bufferIn = new byte[len];
+					int pos = 0;
+					while (pos < len) {
+						int res = sock.Receive(bufferIn, pos, len - pos,SocketFlags.None);
+						if (res == -1) {
+							connected = false;
+							break;
+						} else {
+							pos += res;
+							connected = true;
+						}
+					}
+					toret = Int32.Parse(System.Text.Encoding.ASCII.GetString(bufferIn));
+				} catch (SocketException e) {
+					connected = false;
+					toret = 0;
+				} catch (FormatException e) {
+					toret = 0;
+				}catch (OverflowException e) {
+					toret = 0;
+				}
+			}
+			return toret;
+		}
+		
+		public String receiveData(Int32 lIn) {
+			String toret = "";
+			if (connected) {
+				try {
+					int len = lIn;
+					byte[] bufferIn = new byte[len];
+					int pos = 0;
+					while (pos < len) {
+						int res = sock.Receive(bufferIn, pos, len - pos,SocketFlags.None);
+						if (res == -1) {
+							connected = false;
+							break;
+						} else {
+							pos += res;
+							connected = true;
+						}
+					}
+					toret = System.Text.Encoding.ASCII.GetString(bufferIn);
+				} catch (SocketException e) {
+					connected = false;
+					toret = "";
+				} catch (FormatException e) {
+					toret = "";
+				}catch (OverflowException e) {
+					toret = "";
+				}
+			}
+			return toret;
+		}
 
 		public void invokeConnectionCheck() {
 			try {
